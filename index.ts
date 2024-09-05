@@ -24,7 +24,6 @@ app.get('/', () => {
 
 app.get('/api/products', async (req: Request, res: Response) => {
     try {
-        console.time('a');
         const products = await Product.find();
         console.log('p', products);
         res.json(products);
