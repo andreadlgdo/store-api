@@ -26,6 +26,10 @@ app.get('/', () => {
     console.log('API is running');
 });
 
+app.get('/ping', (req: Request, res: Response) => {
+    res.status(200).send('pong');
+});
+
 app.get('/api/products', async (req: Request, res: Response) => {
     try {
         console.time('a');
