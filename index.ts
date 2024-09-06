@@ -7,7 +7,7 @@ dotenv.config();
 
 const app = express();
 
-const PORT =parseInt(process.env.PORT || '3000', 10);
+const PORT =process.env.PORT || '3000';
 
 // Middleware
 app.use(express.json());
@@ -34,6 +34,6 @@ app.get('/api/products', async (req: Request, res: Response) => {
 });
 
 // Start server
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
