@@ -3,7 +3,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
-import Product from "./models/Product";
+import productRoutes from './routes/productRoutes';
 
 dotenv.config();
 
@@ -21,27 +21,9 @@ mongoose.connect(process.env.MONGODB_URI as string)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-// Routes
-app.get('/', () => {
-    console.log('API is running');
-});
 
-app.get('/ping', (req: Request, res: Response) => {
-    res.status(200).send('pong');
-});
+app.use('/api/products', productRoutes);
 
-app.get('/api/products', async (req: Request, res: Response) => {
-    try {
-        console.time('a');
-        const products = await Product.find();
-        console.log('p', products);
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching products', error });
-    }
-});
-
-// Start server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
