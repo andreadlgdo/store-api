@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import productRoutes from './routes/productRoutes';
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
+import imageRoutes from "./routes/imageRoutes";
 
 dotenv.config();
 
@@ -29,6 +30,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 
 app.use('/api/login', authRoutes);
+
+app.use('/api/images', imageRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
