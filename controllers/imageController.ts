@@ -8,10 +8,10 @@ const s3Client = new S3Client({
 });
 
 
-async function uploadImageToS3(file: any) {
+async function uploadImageToS3(file: any, routeImage: string) {
     const params = {
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: `${Date.now()}-${file.originalname}`,
+        Key: routeImage,
         Body: file.buffer,
         ContentType: file.mimetype,
         ACL: 'public-read'
@@ -36,7 +36,7 @@ export const addImage = async (req: Request, res: Response) => {
             return res.status(400).json({ error: "No se ha subido ninguna imagen" });
         }
 
-        const imageUrl = await uploadImageToS3(req.file);
+        const imageUrl = await uploadImageToS3(req.file, req.body.routeImage);
 
         res.json({ success: true, imageUrl: imageUrl });
     } catch (error) {

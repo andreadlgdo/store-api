@@ -43,3 +43,32 @@ export const addUser = async (req: Request, res: Response) => {
         res.status(500).json({message: 'Error al crear usuario', error: error});
     }
 };
+
+export const updateUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const { username, email, type, imageUrl } = req.body;
+
+        const updateFields: { [key: string]: any } = {};
+        if (username) updateFields.username = username;
+        if (email) updateFields.email = email;
+        if (type) updateFields.type = type;
+        if (imageUrl) updateFields.imageUrl = imageUrl;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            {_id: id},
+            { $set: updateFields },
+            { new: true, runValidators: true }
+        );
+
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.json({ user: updatedUser });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al actualizar usuario', error: error });
+    }
+};
