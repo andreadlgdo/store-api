@@ -48,18 +48,13 @@ export const updateUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const { username, email, password, type, imageUrl } = req.body;
+        const { username, email, type, imageUrl } = req.body;
 
         const updateFields: { [key: string]: any } = {};
         if (username) updateFields.username = username;
         if (email) updateFields.email = email;
         if (type) updateFields.type = type;
         if (imageUrl) updateFields.imageUrl = imageUrl;
-
-        if (password) {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            updateFields.password = hashedPassword;
-        }
 
         const updatedUser = await User.findByIdAndUpdate(
             {_id: id},
