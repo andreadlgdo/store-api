@@ -8,10 +8,10 @@ const s3Client = new S3Client({
 });
 
 
-async function uploadImageToS3(file: any, key: string) {
+async function uploadImageToS3(file: any, routeImage: string) {
     const params = {
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: key,
+        Key: routeImage,
         Body: file.buffer,
         ContentType: file.mimetype,
         ACL: 'public-read'
