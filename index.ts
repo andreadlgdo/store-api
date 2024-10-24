@@ -3,11 +3,13 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
-import productRoutes from './routes/productRoutes';
-import userRoutes from "./routes/userRoutes";
-import authRoutes from "./routes/authRoutes";
-import imageRoutes from "./routes/imageRoutes";
-import generalRoutes from "./routes/generalRoutes";
+import {
+    authRoutes,
+    generalRoutes,
+    imageRoutes,
+    productRoutes,
+    userRoutes
+} from './routes';
 
 dotenv.config();
 
