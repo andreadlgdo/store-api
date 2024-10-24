@@ -7,6 +7,7 @@ import productRoutes from './routes/productRoutes';
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import imageRoutes from "./routes/imageRoutes";
+import generalRoutes from "./routes/generalRoutes";
 
 dotenv.config();
 
@@ -32,6 +33,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/login', authRoutes);
 
 app.use('/api/images', imageRoutes);
+
+app.use('/api/general', generalRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
