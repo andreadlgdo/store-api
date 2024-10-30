@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 interface ICategory extends Document {
     title: string;
-    impageUrl: string;
+    imageUrl: string;
 }
 
 const CategorySchema: Schema = new Schema({
