@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 
 import {
     authRoutes,
+    categoryRoutes,
     generalRoutes,
     imageRoutes,
     productRoutes,
@@ -29,6 +30,8 @@ mongoose.connect(process.env.MONGODB_URI as string)
 
 
 app.use('/api/login', authRoutes);
+
+app.use('/api/category', categoryRoutes);
 
 app.use('/api/general', generalRoutes);
 
