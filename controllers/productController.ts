@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from "mongoose";
 
 import Product from '../models/Product';
 
@@ -41,5 +42,30 @@ export const updateProduct = async (req: Request, res: Response) => {
         res.json({ user: updatedProduct });
     } catch (error) {
         res.status(500).json({ message: 'Error al actualizar un producto', error: error });
+    }
+}
+
+export const addProduct = async (req: Request, res: Response) => {
+    try {
+        const { name, description, categories, price, quantity, imageUrl } = req.body;
+
+        const _id = new mongoose.Types.ObjectId().toString();
+
+        const product = new Product({
+            _id,
+            name,
+            description,
+            categories,
+            price,
+            quantity,
+            imageUrl
+        });
+
+        await product.save();
+
+        res.status(201).json({product: product});
+
+    } catch (error) {
+        res.status(500).json({message: 'Error al crear un producto', error: error});
     }
 }
