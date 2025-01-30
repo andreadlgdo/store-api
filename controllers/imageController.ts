@@ -51,13 +51,13 @@ export const addImage = async (req: Request, res: Response) => {
     }
 };
 
-async function updateImageNameInS3(oldImageName: string, newImageName: string): Promise<void> {
+async function updateImageNameInS3(folder: string, oldImageName: string, newImageName: string): Promise<void> {
     const bucketName = process.env.S3_BUCKET_NAME ?? '';
 
     const copyParams: S3Params = {
         Bucket: bucketName,
-        CopySource: `${bucketName}/products/${encodeURIComponent(oldImageName)}`,
-        Key: `products/${encodeURIComponent(newImageName)}`,
+        CopySource: `${bucketName}/${folder}/${encodeURIComponent(oldImageName)}`,
+        Key: `${folder}/${encodeURIComponent(newImageName)}`,
         ACL: ObjectCannedACL.public_read,
     };
 
@@ -71,12 +71,12 @@ async function updateImageNameInS3(oldImageName: string, newImageName: string): 
     }
 }
 
-async function deleteOldImageFromS3(oldImageName: string): Promise<void> {
+async function deleteOldImageFromS3(folder: string, oldImageName: string): Promise<void> {
     const bucketName = process.env.S3_BUCKET_NAME;
 
     const deleteParams = {
         Bucket: bucketName,
-        Key: `products/${encodeURIComponent(oldImageName)}`,
+        Key: `${folder}/${encodeURIComponent(oldImageName)}`,
     };
 
     try {
@@ -90,14 +90,14 @@ async function deleteOldImageFromS3(oldImageName: string): Promise<void> {
 }
 
 export const updateImageName = async (req: Request, res: Response) => {
-    const { oldImageName, newImageName } = req.body;
+    const { folder, oldImageName, newImageName } = req.body;
 
-    if (!oldImageName || !newImageName) {
-        return res.status(400).json({ error: "Se deben proporcionar ambos nombres de la imagen" });
+    if (!folder || !oldImageName || !newImageName) {
+        return res.status(400).json({ error: "Se deben proporcionar ambos nombres de la imagen, y la carpeta correspondiente" });
     }
 
     try {
-        await updateImageNameInS3(oldImageName, newImageName);
+        await updateImageNameInS3(folder, oldImageName, newImageName);
 
         res.json({ success: true, message: `Imagen renombrada de ${oldImageName} a ${newImageName}` });
     } catch (error) {
@@ -105,3 +105,18 @@ export const updateImageName = async (req: Request, res: Response) => {
     }
 };
 
+export const deleteImageName = async (req: Request, res: Response) => {
+    const { folder, imageToRemove } = req.body;
+
+    if (!folder || !imageToRemove) {
+        return res.status(400).json({ error: "Se debe proporcionar un nombre de una imagen y su carpeta correspondiente" });
+    }
+
+    try {
+        await deleteOldImageFromS3(folder, imageToRemove);
+
+        res.json({ success: true, message: `Imagen renombrada ${imageToRemove} eliminada` });
+    } catch (error) {
+        res.status(500).json({ error: "Hubo un error al eliminar la imagen" });
+    }
+};
