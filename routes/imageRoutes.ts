@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { addImage, updateImageName } from '../controllers/imageController';
+import { addImage, deleteImageName, updateImageName } from '../controllers/imageController';
 
 const router = express.Router();
 
@@ -9,5 +9,6 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.post('/', upload.single('image'), addImage);
 router.post('/updated', updateImageName);
+router.post('/deleted', deleteImageName);
 
 export default router;
