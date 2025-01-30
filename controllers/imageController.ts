@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { CopyObjectCommand, DeleteObjectCommand, ObjectCannedACL } from "@aws-sdk/client-s3";
 
 const { S3Client } = require("@aws-sdk/client-s3");
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
@@ -7,6 +8,12 @@ const s3Client = new S3Client({
     region: process.env.AWS_REGION
 });
 
+type S3Params = {
+    Bucket: string;
+    CopySource: string;
+    Key: string;
+    ACL: ObjectCannedACL;
+};
 
 async function uploadImageToS3(file: any, routeImage: string) {
     const params = {
@@ -43,3 +50,58 @@ export const addImage = async (req: Request, res: Response) => {
         res.status(500).json({ error: error });
     }
 };
+
+async function updateImageNameInS3(oldImageName: string, newImageName: string): Promise<void> {
+    const bucketName = process.env.S3_BUCKET_NAME ?? '';
+
+    const copyParams: S3Params = {
+        Bucket: bucketName,
+        CopySource: `${bucketName}/products/${encodeURIComponent(oldImageName)}`,
+        Key: `products/${encodeURIComponent(newImageName)}`,
+        ACL: ObjectCannedACL.public_read,
+    };
+
+    try {
+        const copyCommand = new CopyObjectCommand(copyParams);
+        await s3Client.send(copyCommand);
+
+        console.log(`Imagen copiada con éxito de ${oldImageName} a ${newImageName}`);
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function deleteOldImageFromS3(oldImageName: string): Promise<void> {
+    const bucketName = process.env.S3_BUCKET_NAME;
+
+    const deleteParams = {
+        Bucket: bucketName,
+        Key: `products/${encodeURIComponent(oldImageName)}`,
+    };
+
+    try {
+        const deleteCommand = new DeleteObjectCommand(deleteParams);
+        await s3Client.send(deleteCommand);
+
+        console.log(`Imagen ${oldImageName} eliminada con éxito`);
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const updateImageName = async (req: Request, res: Response) => {
+    const { oldImageName, newImageName } = req.body;
+
+    if (!oldImageName || !newImageName) {
+        return res.status(400).json({ error: "Se deben proporcionar ambos nombres de la imagen" });
+    }
+
+    try {
+        await updateImageNameInS3(oldImageName, newImageName);
+
+        res.json({ success: true, message: `Imagen renombrada de ${oldImageName} a ${newImageName}` });
+    } catch (error) {
+        res.status(500).json({ error: "Hubo un error al actualizar el nombre de la imagen" });
+    }
+};
+
