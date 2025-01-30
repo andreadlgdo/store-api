@@ -51,7 +51,7 @@ export const addImage = async (req: Request, res: Response) => {
     }
 };
 
-async function updateImageNameInS3(folder: string, oldImageName: string, newImageName: string): Promise<void> {
+async function updateImageNameInS3(folder: string, oldImageName: string, newImageName: string) {
     const bucketName = process.env.S3_BUCKET_NAME ?? '';
 
     const copyParams: S3Params = {
@@ -66,6 +66,8 @@ async function updateImageNameInS3(folder: string, oldImageName: string, newImag
         await s3Client.send(copyCommand);
 
         console.log(`Imagen copiada con éxito de ${oldImageName} a ${newImageName}`);
+
+        return `https://${copyParams.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${encodeURIComponent(copyParams.Key)}`;
     } catch (error) {
         throw error;
     }
@@ -97,9 +99,9 @@ export const updateImageName = async (req: Request, res: Response) => {
     }
 
     try {
-        await updateImageNameInS3(folder, oldImageName, newImageName);
+        const imageUrl = await updateImageNameInS3(folder, oldImageName, newImageName);
 
-        res.json({ success: true, message: `Imagen renombrada de ${oldImageName} a ${newImageName}` });
+        res.json({ success: true, imageUrl: imageUrl });
     } catch (error) {
         res.status(500).json({ error: "Hubo un error al actualizar el nombre de la imagen" });
     }
