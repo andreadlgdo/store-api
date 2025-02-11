@@ -17,16 +17,14 @@ export const updateProduct = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const { name, description, price, categories, quantity, imageUrl } = req.body;
-
         const updateFields: { [key: string]: any } = {};
+        const allowedFields = ['name', 'description', 'price', 'categories', 'quantity', 'imageUrl'];
 
-        if (name) updateFields.name = name;
-        if (price) updateFields.price = price;
-        updateFields.description = description;
-        updateFields.categories = categories;
-        updateFields.quantity = quantity;
-        updateFields.imageUrl = imageUrl;
+        allowedFields.forEach(field => {
+            if (req.body[field]) {
+                updateFields[field] = req.body[field];
+            }
+        });
 
         const updatedProduct = await Product.findByIdAndUpdate(
             {_id: id},
@@ -49,10 +47,7 @@ export const addProduct = async (req: Request, res: Response) => {
     try {
         const { name, description, categories, price, quantity, imageUrl } = req.body;
 
-        const _id = new mongoose.Types.ObjectId().toString();
-
         const product = new Product({
-            _id,
             name,
             description,
             categories,
@@ -63,7 +58,7 @@ export const addProduct = async (req: Request, res: Response) => {
 
         await product.save();
 
-        res.status(201).json({product: product});
+        res.status(201).json({ product });
 
     } catch (error) {
         res.status(500).json({message: 'Error al crear un producto', error: error});
@@ -74,7 +69,10 @@ export const deleteProduct = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        await Product.findByIdAndDelete(id);
+        const deletedProduct = await Product.findByIdAndDelete(id);
+        if (!deletedProduct) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
 
         res.json({ success: true });
     } catch (error) {
