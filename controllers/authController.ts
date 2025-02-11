@@ -7,15 +7,15 @@ import User from '../models/User.js';
 
 export const login = async (req:Request, res: Response) => {
     try {
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
-        // Buscar el usuario por nombre de usuario
-        const user = await User.findOne({ username });
+        // Buscar el usuario por email
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({
                 message: {
-                    es: 'Nombre de usuario incorrecto',
-                    en: 'Incorrect username'
+                    es: 'Correo electronico incorrecto',
+                    en: 'Incorrect email'
                 }
             });
         }
