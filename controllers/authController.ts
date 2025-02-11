@@ -9,16 +9,26 @@ export const login = async (req:Request, res: Response) => {
     try {
         const { username, password } = req.body;
 
-        // Buscar el usuario por email
+        // Buscar el usuario por nombre de usuario
         const user = await User.findOne({ username });
         if (!user) {
-            return res.status(401).json({ message: {es: 'Nombre de usuario incorrecto', en:'Incorrect username'} });
+            return res.status(401).json({
+                message: {
+                    es: 'Nombre de usuario incorrecto',
+                    en: 'Incorrect username'
+                }
+            });
         }
 
         // Verificar la contraseña
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({ message: {es: 'Contraseña incorrecto', en:'Incorrect password'} });
+            return res.status(401).json({
+                message: {
+                    es: 'Contraseña incorrecto',
+                    en:'Incorrect password'
+                }
+            });
         }
 
         // Generar token JWT
@@ -28,8 +38,14 @@ export const login = async (req:Request, res: Response) => {
             { expiresIn: '1h' }
         );
 
-        res.json({ token, user: user });
+        // Excluir la contraseña antes de enviar la respuesta
+        const { password: _, ...userWithoutPassword } = user.toObject();
+
+        res.json({ token, user: userWithoutPassword });
     } catch (error) {
-        res.status(500).json({ message: 'Error en el servidor', error });
+        res.status(500).json({
+            message: 'Error en el login',
+            error
+        });
     }
 };
