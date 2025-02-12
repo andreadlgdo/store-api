@@ -6,16 +6,24 @@ import Product from '../models/Product';
 export const getProducts = async (req: Request, res: Response) => {
     try {
         const { categories } = req.query;
-        const products = await Product.find(categories?.length ? { categories: { $in: categories }  }: {})
+        const categoriesFilter = Array.isArray(categories) && categories.length
+            ? { categories: { $in: categories } }
+            : {};
+
+        const products = await Product.find(categoriesFilter);
         res.json(products);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching products', error });
+        res.status(500).json({ message: 'Error fetching products', error: error });
     }
 };
 
 export const updateProduct = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'ID de producto no válido' });
+        }
 
         const updateFields: { [key: string]: any } = {};
         const allowedFields = ['name', 'description', 'price', 'categories', 'quantity', 'imageUrl'];
@@ -68,6 +76,10 @@ export const addProduct = async (req: Request, res: Response) => {
 export const deleteProduct = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'ID de producto no válido' });
+        }
 
         const deletedProduct = await Product.findByIdAndDelete(id);
         if (!deletedProduct) {
