@@ -16,7 +16,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
 export const addUser = async (req: Request, res: Response) => {
     try {
-        const { username, email, password, type } = req.body;
+        const { email, password, type } = req.body;
 
         if (!password) {
             return res.status(400).json({ message: 'La contraseña es obligatoria' });
@@ -26,7 +26,6 @@ export const addUser = async (req: Request, res: Response) => {
         const defaultType = type || 'client';
 
         const user = new User({
-            username,
             email,
             password: hashedPassword,
             type: defaultType
@@ -45,10 +44,9 @@ export const updateUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const { username, email, type, imageUrl } = req.body;
+        const {  email, type, imageUrl } = req.body;
 
         const updateFields: { [key: string]: any } = {};
-        if (username) updateFields.username = username;
         if (email) updateFields.email = email;
         if (type) updateFields.type = type;
         if (imageUrl) updateFields.imageUrl = imageUrl;
