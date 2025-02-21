@@ -1,3 +1,4 @@
+export { default as addressRoutes }  from "./addressRoutes";
 export { default as authRoutes }  from "./authRoutes";
 export { default as categoryRoutes } from "./categoryRoutes";
 export { default as generalRoutes } from "./generalRoutes";

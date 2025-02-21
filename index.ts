@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
 import {
+    addressRoutes,
     authRoutes,
     categoryRoutes,
     generalRoutes,
@@ -28,6 +29,7 @@ mongoose.connect(process.env.MONGODB_URI as string)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 
+app.use('/api/addresses', addressRoutes);
 
 app.use('/api/login', authRoutes);
 
