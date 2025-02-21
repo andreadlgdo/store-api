@@ -12,6 +12,16 @@ export const getAddresses = async (req: Request, res: Response) => {
     }
 };
 
+export const findAddressByUserId = async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params;
+        const addresses = await Address.find({ userId: { $in: userId }});
+        res.json(addresses);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching addresses', error: error });
+    }
+};
+
 export const updateAddress = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
@@ -22,6 +32,7 @@ export const updateAddress = async (req: Request, res: Response) => {
 
         const updateFields: { [key: string]: any } = {};
         const allowedFields = [
+            'userId',
             'street',
             'number',
             'letter',
@@ -57,10 +68,10 @@ export const updateAddress = async (req: Request, res: Response) => {
 
 export const addAddress = async (req: Request, res: Response) => {
     try {
-        const { street, number, letter, zipCode, city, country, label, isDefault } = req.body;
+        const { userId, street, number, letter, zipCode, city, country, label, isDefault } = req.body;
 
         const address = new Address({
-            street, number, letter, zipCode, city, country, label, isDefault
+            userId, street, number, letter, zipCode, city, country, label, isDefault
         });
 
         await address.save();
