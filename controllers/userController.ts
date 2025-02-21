@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const bcrypt = require('bcrypt');
 
 import { Request, Response } from 'express';
@@ -67,3 +69,22 @@ export const updateUser = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error al actualizar usuario', error: error });
     }
 };
+
+export const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'ID de usuario no válido' });
+        }
+
+        const deletedUser = await User.findByIdAndDelete(id);
+        if (!deletedUser) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar un usuario', error: error });
+    }
+}
