@@ -26,7 +26,16 @@ export const updateProduct = async (req: Request, res: Response) => {
         }
 
         const updateFields: { [key: string]: any } = {};
-        const allowedFields = ['name', 'description', 'price', 'categories', 'quantity', 'imageUrl'];
+        const allowedFields = [
+            'name',
+            'description',
+            'price',
+            'priceWithDiscount',
+            'categories',
+            'quantity',
+            'imageUrl',
+            'onSale'
+        ];
 
         allowedFields.forEach(field => {
             if (req.body[field]) {
