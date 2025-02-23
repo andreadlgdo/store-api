@@ -43,7 +43,6 @@ export const updateAddress = async (req: Request, res: Response) => {
             'isDefault'
         ];
 
-        console.log(req.body);
         allowedFields.forEach(field => {
             if (req.body.hasOwnProperty(field)) {
                 updateFields[field] = req.body[field];

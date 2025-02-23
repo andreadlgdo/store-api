@@ -6,11 +6,10 @@ import Product from '../models/Product';
 export const getProducts = async (req: Request, res: Response) => {
     try {
         const { categories } = req.query;
-        const categoriesFilter = Array.isArray(categories) && categories.length
-            ? { categories: { $in: categories } }
-            : {};
 
-        const products = await Product.find(categoriesFilter);
+
+        const products = await Product.find(categories ? { categories: { $in: categories } } : {});
+
         res.json(products);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching products', error: error });
