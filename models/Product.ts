@@ -9,6 +9,7 @@ interface IProduct extends Document {
     quantity: number;
     imageUrl: string;
     onSale: boolean;
+    isFavouriteUsersIds: string[];
 }
 
 const ProductSchema: Schema = new Schema({
@@ -20,6 +21,7 @@ const ProductSchema: Schema = new Schema({
     categories: { type: Array<String>, required: false },
     imageUrl: { type: String, required: false },
     onSale: { type: Boolean, required: false },
+    isFavouriteUsersIds: { type: Array<String>, required: false },
 });
 
 export default mongoose.model<IProduct>('Product', ProductSchema);

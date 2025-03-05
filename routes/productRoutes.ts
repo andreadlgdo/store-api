@@ -3,6 +3,7 @@ import express from 'express';
 import {
     addProduct,
     deleteProduct,
+    findProductByUserId, findProductsByIds,
     getProducts,
     updateProduct
 } from '../controllers/productController';
@@ -11,6 +12,8 @@ import {
 const router = express.Router();
 
 router.get('/', getProducts);
+router.get('/:ids', findProductsByIds);
+router.get('/:userId', findProductByUserId);
 router.post('/', addProduct);
 router.put('/:id', updateProduct);
 router.delete('/:id', deleteProduct);
