@@ -61,7 +61,7 @@ export const updateProduct = async (req: Request, res: Response) => {
             'price',
             'priceWithDiscount',
             'categories',
-            'quantity',
+            'stock',
             'imageUrl',
             'onSale',
             'isFavouriteUsersIds'
@@ -92,14 +92,14 @@ export const updateProduct = async (req: Request, res: Response) => {
 
 export const addProduct = async (req: Request, res: Response) => {
     try {
-        const { name, description, categories, price, quantity, imageUrl, isFavouriteUsersIds } = req.body;
+        const { name, description, categories, price, stock, imageUrl, isFavouriteUsersIds } = req.body;
 
         const product = new Product({
             name,
             description,
             categories,
             price,
-            quantity,
+            stock,
             imageUrl,
             isFavouriteUsersIds
         });
@@ -115,19 +115,19 @@ export const addProduct = async (req: Request, res: Response) => {
 
 export const deleteProduct = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'ID de producto no válido' });
+            return res.status(400).json({message: 'ID de producto no válido'});
         }
 
         const deletedProduct = await Product.findByIdAndDelete(id);
         if (!deletedProduct) {
-            return res.status(404).json({ message: 'Producto no encontrado' });
+            return res.status(404).json({message: 'Producto no encontrado'});
         }
 
-        res.json({ success: true });
+        res.json({success: true});
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar un producto', error: error });
+        res.status(500).json({message: 'Error al eliminar un producto', error: error});
     }
 }
