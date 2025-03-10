@@ -79,3 +79,22 @@ export const addOrder = async (req: Request, res: Response) => {
         res.status(500).json({message: 'Error al crear un pedido', error: error});
     }
 }
+
+export const deleteOrder = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({message: 'ID de pedido no válido'});
+        }
+
+        const deletedOrder = await Order.findByIdAndDelete(id);
+        if (!deletedOrder) {
+            return res.status(404).json({message: 'Pedido no encontrado'});
+        }
+
+        res.json({success: true});
+    } catch (error) {
+        res.status(500).json({message: 'Error al eliminar un pedido', error: error});
+    }
+}
