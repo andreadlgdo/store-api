@@ -42,7 +42,7 @@ export const findProductByUserId = async (req: Request, res: Response) => {
         const products = await Product.find({ isFavouriteUsersIds: { $in: [userId]} });
         res.json(products);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching addresses', error: error });
+        res.status(500).json({ message: 'Error fetching products', error: error });
     }
 };
 

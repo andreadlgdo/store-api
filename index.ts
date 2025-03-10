@@ -9,6 +9,7 @@ import {
     categoryRoutes,
     generalRoutes,
     imageRoutes,
+    orderRoutes,
     productRoutes,
     userRoutes
 } from './routes';
@@ -38,6 +39,8 @@ app.use('/api/category', categoryRoutes);
 app.use('/api/general', generalRoutes);
 
 app.use('/api/images', imageRoutes);
+
+app.use('/api/orders', orderRoutes);
 
 app.use('/api/products', productRoutes);
 
