@@ -34,8 +34,12 @@ export const updateOrder = async (req: Request, res: Response) => {
         const updateFields: { [key: string]: any } = {};
         const allowedFields = [
             'userId',
+            'user',
+            'address',
             'status',
-            'products'
+            'products',
+            'promotionCode',
+            'total'
         ];
 
         allowedFields.forEach(field => {
@@ -63,12 +67,16 @@ export const updateOrder = async (req: Request, res: Response) => {
 
 export const addOrder = async (req: Request, res: Response) => {
     try {
-        const { userId, status, products } = req.body;
+        const { userId, user, address, status, products, promotionCode, total } = req.body;
 
         const order = new Order({
             userId,
+            user,
+            address,
             status,
-            products
+            products,
+            promotionCode,
+            total
         });
 
         await order.save();
