@@ -62,6 +62,8 @@ export const updateProduct = async (req: Request, res: Response) => {
             'priceWithDiscount',
             'categories',
             'stock',
+            'isUniqueSize',
+            'uniqueStock',
             'imageUrl',
             'onSale',
             'isFavouriteUsersIds'
@@ -92,7 +94,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 
 export const addProduct = async (req: Request, res: Response) => {
     try {
-        const { name, description, categories, price, stock, imageUrl, isFavouriteUsersIds } = req.body;
+        const { name, description, categories, price, stock, isUniqueSize, uniqueStock, imageUrl, isFavouriteUsersIds } = req.body;
 
         const product = new Product({
             name,
@@ -100,6 +102,8 @@ export const addProduct = async (req: Request, res: Response) => {
             categories,
             price,
             stock,
+            isUniqueSize,
+            uniqueStock,
             imageUrl,
             isFavouriteUsersIds
         });

@@ -6,13 +6,13 @@ interface IOrder extends Document {
     address: AddressOrder;
     status: string;
     products: OrderProducts[];
-    promotionCode?: string;
+    promotionCode: string;
     total: number;
 }
 
 interface OrderProducts  {
     units: string;
-    size: string;
+    size?: string;
     productId: string;
 }
 

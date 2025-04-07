@@ -7,6 +7,8 @@ interface IProduct extends Document {
     priceWithDiscount: number;
     categories: string[];
     stock?: ProductStock[];
+    isUniqueSize?: boolean;
+    uniqueStock?: number;
     imageUrl: string;
     onSale: boolean;
     isFavouriteUsersIds: string[];
@@ -23,6 +25,8 @@ const ProductSchema: Schema = new Schema({
     price: { type: Number, required: true },
     priceWithDiscount: { type: Number, required: false },
     stock: { type: Array<ProductStock>, required: false },
+    isUniqueSize: { type: Boolean, required: false},
+    uniqueStock: { type: Number, required: false},
     categories: { type: Array<String>, required: false },
     imageUrl: { type: String, required: false },
     onSale: { type: Boolean, required: false },
