@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 import Category from "../models/Category";
 
-export const getCategoriesImages = async (req: Request, res: Response) => {
+export const getCategoriesImages = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const categories = await Category.find();
         res.json(categories);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching categories images', error });
+        next(error);
     }
 };

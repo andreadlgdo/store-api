@@ -1,27 +1,25 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import mongoose from "mongoose";
 
 import Product from '../models/Product';
+import { BadRequestError, NotFoundError } from '../utils';
 
-export const getProducts = async (req: Request, res: Response) => {
+export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { categories } = req.query;
-
-
         const products = await Product.find(categories ? { categories: { $in: categories } } : {});
-
         res.json(products);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching products', error: error });
+        next(error);
     }
 };
 
-export const findProductsByIds = async (req: Request, res: Response) => {
+export const findProductsByIds = async (req: Request, res: Response, next: NextFunction) => {
     try {
         let { ids } = req.params;
 
         if (!ids) {
-            return res.status(400).json({ message: "Se requiere un array de IDs de productos" });
+            throw new BadRequestError("Se requiere un array de IDs de productos");
         }
 
         const productIds: string[] = (ids as string).split(',');
@@ -31,27 +29,26 @@ export const findProductsByIds = async (req: Request, res: Response) => {
 
         res.json(products);
     } catch (error) {
-        res.status(500).json({ message: "Error al obtener productos por IDs", error });
+        next(error);
     }
 };
 
-
-export const findProductByUserId = async (req: Request, res: Response) => {
+export const findProductByUserId = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { userId } = req.params;
         const products = await Product.find({ isFavouriteUsersIds: { $in: [userId]} });
         res.json(products);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching products', error: error });
+        next(error);
     }
 };
 
-export const updateProduct = async (req: Request, res: Response) => {
+export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'ID de producto no válido' });
+            throw new BadRequestError('ID de producto no válido');
         }
 
         const updateFields: { [key: string]: any } = {};
@@ -81,18 +78,17 @@ export const updateProduct = async (req: Request, res: Response) => {
             { new: true, runValidators: true }
         );
 
-
         if (!updatedProduct) {
-            return res.status(404).json({ message: 'Producto no encontrado' });
+            throw new NotFoundError('Producto no encontrado');
         }
 
         res.json({ product: updatedProduct });
     } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar un producto', error: error });
+        next(error);
     }
 }
 
-export const addProduct = async (req: Request, res: Response) => {
+export const addProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { name, description, categories, price, stock, isUniqueSize, uniqueStock, imageUrl, isFavouriteUsersIds } = req.body;
 
@@ -111,27 +107,26 @@ export const addProduct = async (req: Request, res: Response) => {
         await product.save();
 
         res.status(201).json({ product });
-
     } catch (error) {
-        res.status(500).json({message: 'Error al crear un producto', error: error});
+        next(error);
     }
 }
 
-export const deleteProduct = async (req: Request, res: Response) => {
+export const deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {id} = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({message: 'ID de producto no válido'});
+            throw new BadRequestError('ID de producto no válido');
         }
 
         const deletedProduct = await Product.findByIdAndDelete(id);
         if (!deletedProduct) {
-            return res.status(404).json({message: 'Producto no encontrado'});
+            throw new NotFoundError('Producto no encontrado');
         }
 
         res.json({success: true});
     } catch (error) {
-        res.status(500).json({message: 'Error al eliminar un producto', error: error});
+        next(error);
     }
 }

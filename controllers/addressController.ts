@@ -1,33 +1,33 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import mongoose from "mongoose";
-
 import Address from '../models/Address';
+import { BadRequestError, NotFoundError } from '../utils';
 
-export const getAddresses = async (req: Request, res: Response) => {
+export const getAddresses = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const addresses = await Address.find();
         res.json(addresses);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching addresses', error: error });
+        next(error);
     }
 };
 
-export const findAddressByUserId = async (req: Request, res: Response) => {
+export const findAddressByUserId = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { userId } = req.params;
         const addresses = await Address.find({ userId: { $in: userId }});
         res.json(addresses);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching addresses', error: error });
+        next(error);
     }
 };
 
-export const updateAddress = async (req: Request, res: Response) => {
+export const updateAddress = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'ID de dirección no válido' });
+            throw new BadRequestError('ID de dirección no válido');
         }
 
         const updateFields: { [key: string]: any } = {};
@@ -55,18 +55,17 @@ export const updateAddress = async (req: Request, res: Response) => {
             { new: true, runValidators: true }
         );
 
-
         if (!updatedAddress) {
-            return res.status(404).json({ message: 'Dirección no encontrado' });
+            throw new NotFoundError('Dirección no encontrado');
         }
 
         res.json({ address: updatedAddress });
     } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar un dirección', error: error });
+        next(error);
     }
 }
 
-export const addAddress = async (req: Request, res: Response) => {
+export const addAddress = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { userId, street, number, letter, zipCode, city, country, label, isDefault } = req.body;
 
@@ -77,27 +76,26 @@ export const addAddress = async (req: Request, res: Response) => {
         await address.save();
 
         res.status(201).json({ address });
-
     } catch (error) {
-        res.status(500).json({message: 'Error al crear una dirección', error: error});
+        next(error);
     }
 }
 
-export const deleteAddress = async (req: Request, res: Response) => {
+export const deleteAddress = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'ID de la dirección no válido' });
+            throw new BadRequestError('ID de la dirección no válido');
         }
 
         const deletedAddress = await Address.findByIdAndDelete(id);
         if (!deletedAddress) {
-            return res.status(404).json({ message: 'Dirección no encontrado' });
+            throw new NotFoundError('Dirección no encontrado');
         }
 
         res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar una dirección', error: error });
+        next(error);
     }
 }

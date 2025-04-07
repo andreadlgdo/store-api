@@ -1,34 +1,33 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 import Order from "../models/Order";
+import { BadRequestError, NotFoundError } from '../utils';
 
-
-export const getOrders = async (req: Request, res: Response) => {
+export const getOrders = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const orders = await Order.find();
-
         res.json(orders);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching orders', error: error });
+        next(error);
     }
 };
 
-export const findOrdersByUserId = async (req: Request, res: Response) => {
+export const findOrdersByUserId = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { userId } = req.params;
         const orders = await Order.find({ userId: userId });
         res.json(orders);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching orders', error: error });
+        next(error);
     }
 };
 
-export const updateOrder = async (req: Request, res: Response) => {
+export const updateOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'ID de pedido no válido' });
+            throw new BadRequestError('ID de pedido no válido');
         }
 
         const updateFields: { [key: string]: any } = {};
@@ -54,18 +53,17 @@ export const updateOrder = async (req: Request, res: Response) => {
             { new: true, runValidators: true }
         );
 
-
         if (!updatedOrder) {
-            return res.status(404).json({ message: 'Pedido no encontrado' });
+            throw new NotFoundError('Pedido no encontrado');
         }
 
         res.json({ order: updatedOrder });
     } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar un pedido', error: error });
+        next(error);
     }
 }
 
-export const addOrder = async (req: Request, res: Response) => {
+export const addOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { userId, user, address, status, products, promotionCode, total } = req.body;
 
@@ -82,27 +80,26 @@ export const addOrder = async (req: Request, res: Response) => {
         await order.save();
 
         res.status(201).json({ order });
-
     } catch (error) {
-        res.status(500).json({message: 'Error al crear un pedido', error: error});
+        next(error);
     }
 }
 
-export const deleteOrder = async (req: Request, res: Response) => {
+export const deleteOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({message: 'ID de pedido no válido'});
+            throw new BadRequestError('ID de pedido no válido');
         }
 
         const deletedOrder = await Order.findByIdAndDelete(id);
         if (!deletedOrder) {
-            return res.status(404).json({message: 'Pedido no encontrado'});
+            throw new NotFoundError('Pedido no encontrado');
         }
 
         res.json({success: true});
     } catch (error) {
-        res.status(500).json({message: 'Error al eliminar un pedido', error: error});
+        next(error);
     }
 }

@@ -1,34 +1,24 @@
 const bcrypt = require('bcrypt');
 
 import jwt from 'jsonwebtoken';
-import { Request, Response } from 'express';
-
+import { Request, Response, NextFunction } from 'express';
 import User from '../models/User.js';
+import { UnauthorizedError } from '../utils';
 
-export const login = async (req:Request, res: Response) => {
+export const login = async (req:Request, res: Response, next: NextFunction) => {
     try {
         const { email, password } = req.body;
 
         // Buscar el usuario por email
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(401).json({
-                message: {
-                    es: 'Correo electronico incorrecto',
-                    en: 'Incorrect email'
-                }
-            });
+            throw new UnauthorizedError('Credenciales incorrectas');
         }
 
         // Verificar la contraseña
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({
-                message: {
-                    es: 'Contraseña incorrecto',
-                    en:'Incorrect password'
-                }
-            });
+            throw new UnauthorizedError('Credenciales incorrectas');
         }
 
         // Generar token JWT
@@ -43,9 +33,6 @@ export const login = async (req:Request, res: Response) => {
 
         res.json({ token, user: userWithoutPassword });
     } catch (error) {
-        res.status(500).json({
-            message: 'Error en el login',
-            error
-        });
+        next(error);
     }
 };

@@ -1,27 +1,25 @@
 import mongoose from "mongoose";
+import { Request, Response, NextFunction } from 'express';
+import User from '../models/User';
+import { BadRequestError, NotFoundError } from '../utils';
 
 const bcrypt = require('bcrypt');
 
-import { Request, Response } from 'express';
-
-import User from '../models/User';
-
-
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const users = await User.find();
         res.json({ users });
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching users', error });
+        next(error);
     }
 };
 
-export const addUser = async (req: Request, res: Response) => {
+export const addUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { name, surname, email, password, type } = req.body;
 
         if (!password) {
-            return res.status(400).json({ message: 'La contraseña es obligatoria' });
+            throw new BadRequestError('La contraseña es obligatoria');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -38,15 +36,18 @@ export const addUser = async (req: Request, res: Response) => {
         await user.save();
 
         res.status(201).json({ user });
-
     } catch (error) {
-        res.status(500).json({message: 'Error al crear usuario', error: error});
+        next(error);
     }
 };
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            throw new BadRequestError('ID de usuario no válido');
+        }
 
         const { name, surname, email, type, imageUrl } = req.body;
 
@@ -63,32 +64,31 @@ export const updateUser = async (req: Request, res: Response) => {
             { new: true, runValidators: true }
         );
 
-
         if (!updatedUser) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
+            throw new NotFoundError('Usuario no encontrado');
         }
 
         res.json({ user: updatedUser });
     } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar usuario', error: error });
+        next(error);
     }
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'ID de usuario no válido' });
+            throw new BadRequestError('ID de usuario no válido');
         }
 
         const deletedUser = await User.findByIdAndDelete(id);
         if (!deletedUser) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
+            throw new NotFoundError('Usuario no encontrado');
         }
 
         res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar un usuario', error: error });
+        next(error);
     }
 }
