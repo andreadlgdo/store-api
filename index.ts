@@ -7,7 +7,7 @@ import {
     addressRoutes,
     authRoutes,
     categoryRoutes,
-    customTextsRoutes,
+    customRoutes,
     generalRoutes,
     imageRoutes,
     orderRoutes,
@@ -37,7 +37,7 @@ app.use('/api/login', authRoutes);
 
 app.use('/api/category', categoryRoutes);
 
-app.use('/api/customTexts', customTextsRoutes);
+app.use('/api/custom', customRoutes);
 
 app.use('/api/general', generalRoutes);
 
