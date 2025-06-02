@@ -4,7 +4,7 @@ import {getOrders, findOrdersByUserId, addOrder, updateOrder, deleteOrder} from 
 const router = express.Router();
 
 router.get('/', getOrders);
-router.get('/user/:userId', findOrdersByUserId);
+router.get('/:userId', findOrdersByUserId);
 router.post('/', addOrder);
 router.put('/:id', updateOrder);
 router.delete('/:id', deleteOrder);
