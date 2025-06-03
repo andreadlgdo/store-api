@@ -1,9 +1,10 @@
 import express from 'express';
 
-import { getTopCategoriesByUserId } from '../controllers/recommendationController';
+import { getFavouriteRecommendationsByUserId, getTopCategoriesByUserId } from '../controllers/recommendationController';
 
 const router = express.Router();
 
-router.get('/:userId', getTopCategoriesByUserId);
+router.get('/orders/:userId', getTopCategoriesByUserId);
+router.get('/favourites/:userId', getFavouriteRecommendationsByUserId);
 
 export default router;

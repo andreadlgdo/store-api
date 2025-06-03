@@ -37,3 +37,30 @@ export const getTopCategoriesByUserId = async (req: Request, res: Response, next
         next(error);
     }
 };
+
+export const getFavouriteRecommendationsByUserId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { userId } = req.params;
+
+        // Get all products that the user has marked as favorite
+        const favoriteProducts = await Product.find({ isFavouriteUsersIds: userId });
+
+        // Count categories from favorite products
+        const categoryCount = favoriteProducts.reduce((acc, product) => {
+            product.categories.forEach(category => {
+                acc[category] = (acc[category] || 0) + 1;
+            });
+            return acc;
+        }, {} as Record<string, number>);
+
+        // Sort categories by count and get top 3
+        const topCategories = Object.entries(categoryCount)
+            .sort(([, countA], [, countB]) => countB - countA)
+            .slice(0, 3)
+            .map(([category]) => category);
+
+        res.json({ topCategories });
+    } catch (error) {
+        next(error);
+    }
+};
