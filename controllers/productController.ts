@@ -6,8 +6,19 @@ import { BadRequestError, NotFoundError } from '../utils';
 
 export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { categories } = req.query;
-        const products = await Product.find(categories ? { categories: { $in: categories } } : {});
+        const { categories, name, id } = req.query;
+        
+        const filter: any = {};
+        
+        if (categories) {
+            filter.categories = { $in: categories };
+        }
+        
+        if (name) {
+            filter.name = { $regex: name, $options: 'i' };
+        }
+
+        const products = await Product.find(filter);
         res.json(products);
     } catch (error) {
         next(error);
