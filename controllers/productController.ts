@@ -6,7 +6,7 @@ import { BadRequestError, NotFoundError } from '../utils';
 
 export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { categories, name, order } = req.query;
+        const { categories, name, order, discounted, hasStock } = req.query;
         
         const filter: any = {};
         
@@ -16,6 +16,42 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
         
         if (name) {
             filter.name = { $regex: name, $options: 'i' };
+        }
+
+        // Add filter for discounted products
+        if (discounted === 'true') {
+            filter.priceWithDiscount = { $exists: true, $ne: null };
+        } else if (discounted === 'false') {
+            filter.priceWithDiscount = { $exists: false };
+        }
+
+        // Add filter for products with/without stock
+        if (hasStock === 'true') {
+            filter.$or = [
+                // Products with uniqueStock > 0
+                { uniqueStock: { $gt: 0 } },
+                // Products with non-empty stock array and sum of quantities > 0
+                {
+                    $and: [
+                        { stock: { $exists: true, $ne: [] } },
+                        { stock: { $elemMatch: { quantity: { $gt: 0 } } } }
+                    ]
+                }
+            ];
+        } else if (hasStock === 'false') {
+            filter.$and = [
+                // Products with uniqueStock = 0 or doesn't exist
+                { $or: [
+                    { uniqueStock: 0 },
+                    { uniqueStock: { $exists: false } }
+                ]},
+                // Products with empty stock array or sum of quantities = 0
+                { $or: [
+                    { stock: { $exists: false } },
+                    { stock: [] },
+                    { stock: { $not: { $elemMatch: { quantity: { $gt: 0 } } } } }
+                ]}
+            ];
         }
 
         let products;
