@@ -6,7 +6,7 @@ import { BadRequestError, NotFoundError } from '../utils';
 
 export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { categories, name, id } = req.query;
+        const { categories, name, order } = req.query;
         
         const filter: any = {};
         
@@ -18,7 +18,26 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
             filter.name = { $regex: name, $options: 'i' };
         }
 
-        const products = await Product.find(filter);
+        let products;
+        if (order) {
+            // Always sort by price in DB for efficiency
+            let sortOrder: 1 | -1 = 1; // ascending
+            if (order === 'desc') {
+                sortOrder = -1;
+            }
+            products = await Product.find(filter).sort({ price: sortOrder } as Record<string, 1 | -1>);
+
+            // Sort all products by their effective price (priceWithDiscount if available, otherwise price)
+            products.sort((a: any, b: any) => {
+                const aPrice = typeof a.priceWithDiscount === 'number' ? a.priceWithDiscount : a.price;
+                const bPrice = typeof b.priceWithDiscount === 'number' ? b.priceWithDiscount : b.price;
+                if (aPrice === bPrice) return 0;
+                return sortOrder * (aPrice - bPrice);
+            });
+        } else {
+            // No order provided, return products without sorting
+            products = await Product.find(filter);
+        }
         res.json(products);
     } catch (error) {
         next(error);
