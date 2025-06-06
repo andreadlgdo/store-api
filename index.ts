@@ -12,6 +12,7 @@ import {
     imageRoutes,
     orderRoutes,
     productRoutes,
+    productViewRoutes,
     recommendationRoutes,
     userRoutes
 } from './routes';
@@ -47,6 +48,8 @@ app.use('/api/images', imageRoutes);
 app.use('/api/orders', orderRoutes);
 
 app.use('/api/products', productRoutes);
+
+app.use('/api/productViews', productViewRoutes);
 
 app.use('/api/recommendations', recommendationRoutes);
 

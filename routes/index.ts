@@ -6,5 +6,6 @@ export { default as generalRoutes } from "./generalRoutes";
 export { default as imageRoutes } from "./imageRoutes";
 export { default as orderRoutes } from "./orderRoutes";
 export { default as productRoutes } from './productRoutes';
+export { default as productViewRoutes } from './productViewRoutes';
 export { default as recommendationRoutes } from './recommendationRoutes';
 export { default as userRoutes } from "./userRoutes";
