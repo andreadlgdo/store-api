@@ -6,7 +6,7 @@ import { BadRequestError, NotFoundError } from '../utils';
 
 export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { categories, name, order, discounted, hasStock } = req.query;
+        const { categories, name, order, discounted, hasStock, minPrice, maxPrice } = req.query;
         
         const filter: any = {};
         
@@ -24,34 +24,67 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
         } else if (discounted === 'false') {
             filter.priceWithDiscount = { $exists: false };
         }
+        
+        // Add price range filter
+        if (minPrice || maxPrice) {
+            const priceFilter = {
+                $or: [
+                    // Check regular price
+                    {
+                        price: {
+                            ...(minPrice && { $gte: Number(minPrice) }),
+                            ...(maxPrice && { $lte: Number(maxPrice) })
+                        }
+                    },
+                    // Check discounted price if it exists
+                    {
+                        priceWithDiscount: {
+                            $exists: true,
+                            ...(minPrice && { $gte: Number(minPrice) }),
+                            ...(maxPrice && { $lte: Number(maxPrice) })
+                        }
+                    }
+                ]
+            };
+            filter.$and = filter.$and || [];
+            filter.$and.push(priceFilter);
+        }
 
         // Add filter for products with/without stock
         if (hasStock === 'true') {
-            filter.$or = [
-                // Products with uniqueStock > 0
-                { uniqueStock: { $gt: 0 } },
-                // Products with non-empty stock array and sum of quantities > 0
-                {
-                    $and: [
-                        { stock: { $exists: true, $ne: [] } },
-                        { stock: { $elemMatch: { quantity: { $gt: 0 } } } }
-                    ]
-                }
-            ];
+            const stockFilter = {
+                $or: [
+                    // Products with uniqueStock > 0
+                    { uniqueStock: { $gt: 0 } },
+                    // Products with non-empty stock array and sum of quantities > 0
+                    {
+                        $and: [
+                            { stock: { $exists: true, $ne: [] } },
+                            { stock: { $elemMatch: { quantity: { $gt: 0 } } } }
+                        ]
+                    }
+                ]
+            };
+            filter.$and = filter.$and || [];
+            filter.$and.push(stockFilter);
         } else if (hasStock === 'false') {
-            filter.$and = [
-                // Products with uniqueStock = 0 or doesn't exist
-                { $or: [
-                    { uniqueStock: 0 },
-                    { uniqueStock: { $exists: false } }
-                ]},
-                // Products with empty stock array or sum of quantities = 0
-                { $or: [
-                    { stock: { $exists: false } },
-                    { stock: [] },
-                    { stock: { $not: { $elemMatch: { quantity: { $gt: 0 } } } } }
-                ]}
-            ];
+            const noStockFilter = {
+                $and: [
+                    // Products with uniqueStock = 0 or doesn't exist
+                    { $or: [
+                        { uniqueStock: 0 },
+                        { uniqueStock: { $exists: false } }
+                    ]},
+                    // Products with empty stock array or sum of quantities = 0
+                    { $or: [
+                        { stock: { $exists: false } },
+                        { stock: [] },
+                        { stock: { $not: { $elemMatch: { quantity: { $gt: 0 } } } } }
+                    ]}
+                ]
+            };
+            filter.$and = filter.$and || [];
+            filter.$and.push(noStockFilter);
         }
 
         let products;
