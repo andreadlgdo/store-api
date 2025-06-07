@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Order from '../models/Order';
 import Product from '../models/Product';
+import ProductView from '../models/ProductView';
 import mongoose from 'mongoose';
 
 export const getTopCategoriesByUserId = async (req: Request, res: Response, next: NextFunction) => {
@@ -47,6 +48,39 @@ export const getFavouriteRecommendationsByUserId = async (req: Request, res: Res
 
         // Count categories from favorite products
         const categoryCount = favoriteProducts.reduce((acc, product) => {
+            product.categories.forEach(category => {
+                acc[category] = (acc[category] || 0) + 1;
+            });
+            return acc;
+        }, {} as Record<string, number>);
+
+        // Sort categories by count and get top 3
+        const topCategories = Object.entries(categoryCount)
+            .sort(([, countA], [, countB]) => countB - countA)
+            .slice(0, 3)
+            .map(([category]) => category);
+
+        res.json({ topCategories });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getMostViewedCategoriesByUserId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { userId } = req.params;
+
+        // Get all product views for the user
+        const productViews = await ProductView.find({ userId });
+
+        // Extract all product IDs from views
+        const productIds = productViews.map(view => new mongoose.Types.ObjectId(view.productId));
+
+        // Get all products with their categories
+        const products = await Product.find({ _id: { $in: productIds } });
+
+        // Count categories
+        const categoryCount = products.reduce((acc, product) => {
             product.categories.forEach(category => {
                 acc[category] = (acc[category] || 0) + 1;
             });
