@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 
 import {
     addressRoutes,
+    analyticsRoutes,
     authRoutes,
     categoryRoutes,
     customRoutes,
@@ -54,6 +55,8 @@ app.use('/api/productViews', productViewRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 
 app.use('/api/users', userRoutes);
+
+app.use('/api/analytics', analyticsRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

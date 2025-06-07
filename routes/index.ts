@@ -9,3 +9,4 @@ export { default as productRoutes } from './productRoutes';
 export { default as productViewRoutes } from './productViewRoutes';
 export { default as recommendationRoutes } from './recommendationRoutes';
 export { default as userRoutes } from "./userRoutes";
+export { default as analyticsRoutes } from "./analyticsRoutes";
