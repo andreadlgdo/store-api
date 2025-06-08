@@ -1,9 +1,10 @@
 import express from 'express';
 
-import { getCategoriesImages } from "../controllers/categoryController";
+import { getCategories, getCategoriesById } from "../controllers/categoryController";
 
 const router = express.Router();
 
-router.get('/', getCategoriesImages);
+router.get('/', getCategories);
+router.get('/:id', getCategoriesById);
 
 export default router;
