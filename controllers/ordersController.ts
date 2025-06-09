@@ -74,7 +74,8 @@ export const addOrder = async (req: Request, res: Response, next: NextFunction) 
             status,
             products,
             promotionCode,
-            total
+            total,
+            timestamp: new Date()
         });
 
         await order.save();

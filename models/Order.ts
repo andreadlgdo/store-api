@@ -8,6 +8,7 @@ interface IOrder extends Document {
     products: OrderProducts[];
     promotionCode: string;
     total: number;
+    timestamp: Date;
 }
 
 interface OrderProducts  {
@@ -39,6 +40,7 @@ const OrderSchema: Schema = new Schema({
     products: { type: Array<OrderProducts>, required: true },
     promotionCode: { type: String, required: false },
     total: { type: Number, required: true },
+    timestamp: { type: Date, default: Date.now },
 });
 
 export default mongoose.model<IOrder>('Order', OrderSchema);

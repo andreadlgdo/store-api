@@ -12,6 +12,8 @@ interface IProduct extends Document {
     imageUrl: string;
     onSale: boolean;
     isFavouriteUsersIds: string[];
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 interface ProductStock  {
@@ -31,6 +33,8 @@ const ProductSchema: Schema = new Schema({
     imageUrl: { type: String, required: false },
     onSale: { type: Boolean, required: false },
     isFavouriteUsersIds: { type: Array<String>, required: false },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
 });
 
 export default mongoose.model<IProduct>('Product', ProductSchema);

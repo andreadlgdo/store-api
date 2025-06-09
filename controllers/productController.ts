@@ -150,7 +150,10 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
             throw new BadRequestError('ID de producto no válido');
         }
 
-        const updateFields: { [key: string]: any } = {};
+        const updateFields: { [key: string]: any } = {
+            updatedAt: new Date()
+        };
+        
         const allowedFields = [
             'name',
             'description',
@@ -200,7 +203,9 @@ export const addProduct = async (req: Request, res: Response, next: NextFunction
             isUniqueSize,
             uniqueStock,
             imageUrl,
-            isFavouriteUsersIds
+            isFavouriteUsersIds,
+            createdAt: new Date(),
+            updatedAt: new Date()
         });
 
         await product.save();
