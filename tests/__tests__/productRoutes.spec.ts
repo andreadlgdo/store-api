@@ -91,4 +91,47 @@ describe('Product Routes', () => {
     expect(res.status).toBe(200);
     expect(res.body.length).toBeGreaterThan(0);
   });
+
+  it('GET /api/products?name=Test filtra por nombre de producto', async () => {
+    const res = await request(app).get('/api/products?name=Producto');
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBeGreaterThan(0);
+    expect(res.body[0].name).toMatch(/Producto/i);
+  });
+  
+  it('GET /api/products?categories=ropa filtra por categoría', async () => {
+    const res = await request(app).get('/api/products?categories=ropa');
+    expect(res.status).toBe(200);
+    expect(res.body.every((p: any) => p.categories.includes('ropa'))).toBe(true);
+  });
+  
+  it('GET /api/products?minPrice=50&maxPrice=120 filtra por rango de precios', async () => {
+    const res = await request(app).get('/api/products?minPrice=50&maxPrice=120');
+    expect(res.status).toBe(200);
+    res.body.forEach((product: any) => {
+      const price = product.priceWithDiscount ?? product.price;
+      expect(price).toBeGreaterThanOrEqual(50);
+      expect(price).toBeLessThanOrEqual(120);
+    });
+  });
+  
+  it('GET /api/products?hasStock=false devuelve productos sin stock', async () => {
+    // Creamos un producto sin stock
+    await Product.create({
+      name: 'Sin stock',
+      price: 99,
+      categories: ['ropa'],
+      imageUrl: 'https://imagen.com/sin.jpg',
+      uniqueStock: 0,
+      stock: [],
+      onSale: false,
+      isFavouriteUsersIds: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+  
+    const res = await request(app).get('/api/products?hasStock=false');
+    expect(res.status).toBe(200);
+    expect(res.body.some((p: any) => p.name === 'Sin stock')).toBe(true);
+  });  
 });
