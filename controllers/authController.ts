@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import User from '../models/User.js';
+import User from '../models/User';
 import { UnauthorizedError } from '../utils';
 
 export const login = async (req:Request, res: Response, next: NextFunction) => {

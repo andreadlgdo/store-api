@@ -6,7 +6,7 @@ import { BadRequestError, NotFoundError } from '../utils';
 export const getAddresses = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const addresses = await Address.find();
-        res.json(addresses);
+        res.status(200).json(addresses);
     } catch (error) {
         next(error);
     }
@@ -16,7 +16,7 @@ export const findAddressByUserId = async (req: Request, res: Response, next: Nex
     try {
         const { userId } = req.params;
         const addresses = await Address.find({ userId: { $in: userId }});
-        res.json(addresses);
+        res.status(200).json(addresses);
     } catch (error) {
         next(error);
     }
@@ -59,7 +59,7 @@ export const updateAddress = async (req: Request, res: Response, next: NextFunct
             throw new NotFoundError('Dirección no encontrado');
         }
 
-        res.json({ address: updatedAddress });
+        res.status(200).json({ address: updatedAddress });
     } catch (error) {
         next(error);
     }
@@ -94,7 +94,7 @@ export const deleteAddress = async (req: Request, res: Response, next: NextFunct
             throw new NotFoundError('Dirección no encontrado');
         }
 
-        res.json({ success: true });
+        res.status(200).json({ success: true });
     } catch (error) {
         next(error);
     }
