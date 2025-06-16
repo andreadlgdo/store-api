@@ -22,7 +22,7 @@ beforeEach(() => {
   process.env.S3_BUCKET_NAME = 'test-bucket';
 });
 
-describe('Image Routes - /api/images', () => {
+describe('Image Routes', () => {
   it('POST /api/images debe subir una imagen correctamente', async () => {
     const testImagePath = path.join(__dirname, 'fixtures', 'test-image.png');
 

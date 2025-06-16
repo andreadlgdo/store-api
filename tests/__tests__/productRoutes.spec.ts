@@ -3,7 +3,7 @@ import app from '../../app';
 import Product from '../../models/Product';
 import mongoose from 'mongoose';
 
-describe('Product Routes - /api/products', () => {
+describe('Product Routes', () => {
   let productId: string;
 
   beforeEach(async () => {

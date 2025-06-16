@@ -3,7 +3,7 @@ import app from '../../app';
 import ProductView from '../../models/ProductView';
 import mongoose from 'mongoose';
 
-describe('ProductView Routes - /api/productViews', () => {
+describe('ProductView Routes', () => {
   let userId: string;
   let productId: string;
 

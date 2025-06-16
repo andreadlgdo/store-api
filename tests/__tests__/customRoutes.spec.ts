@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../../app';
 import Custom from '../../models/Custom';
 
-describe('Custom Routes - /api/custom', () => {
+describe('Custom Routes', () => {
   beforeEach(async () => {
     await Custom.create({
       page: 'home',

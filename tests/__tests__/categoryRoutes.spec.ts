@@ -3,7 +3,7 @@ import app from '../../app';
 import Category from '../../models/Category';
 import mongoose from 'mongoose';
 
-describe('Category Routes - /api/category', () => {
+describe('Category Routes', () => {
   let categoryId: mongoose.Types.ObjectId;
 
   beforeEach(async () => {

@@ -5,7 +5,7 @@ import Order from '../../models/Order';
 import Product from '../../models/Product';
 import ProductView from '../../models/ProductView';
 
-describe('Recommendation Routes - /api/recommendations', () => {
+describe('Recommendation Routes', () => {
   let userId: string;
   let productId1: mongoose.Types.ObjectId;
   let productId2: mongoose.Types.ObjectId;
