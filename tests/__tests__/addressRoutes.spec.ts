@@ -1,7 +1,6 @@
 import request from 'supertest';
 import app from '../../app';
 import Address from '../../models/Address';
-import mongoose from 'mongoose';
 
 describe('Address Routes', () => {
   let createdAddress: any;

@@ -1,8 +1,6 @@
 import request from 'supertest';
 import app from '../../app';
 import path from 'path';
-import { S3Client, CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
 
 // Mock de AWS SDK
 jest.mock('@aws-sdk/client-s3', () => ({
