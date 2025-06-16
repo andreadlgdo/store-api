@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 interface IImage extends Document {
     type: string;
-    impageUrl: string;
+    imageUrl: string;
     device: string;
 }
 

@@ -31,7 +31,7 @@ export const login = async (req:Request, res: Response, next: NextFunction) => {
         // Excluir la contraseña antes de enviar la respuesta
         const { password: _, ...userWithoutPassword } = user.toObject();
 
-        res.json({ token, user: userWithoutPassword });
+        res.status(200).json({ token, user: userWithoutPassword });
     } catch (error) {
         next(error);
     }

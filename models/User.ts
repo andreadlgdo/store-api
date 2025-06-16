@@ -6,7 +6,7 @@ interface IUser extends Document {
     email: string;
     password: string;
     type: string;
-    impageUrl: string;
+    imageUrl: string;
     addresses?: string[];
 }
 

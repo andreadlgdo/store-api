@@ -4,7 +4,7 @@ import ProductView from '../../models/ProductView';
 import Product from '../../models/Product';
 import mongoose from 'mongoose';
 
-describe('Analytics Routes - /api/analytics/topProducts', () => {
+describe('Analytics Routes', () => {
   let productId1: mongoose.Types.ObjectId;
   let productId2: mongoose.Types.ObjectId;
 

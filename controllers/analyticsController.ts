@@ -39,7 +39,7 @@ export const getMostViewedProducts = async (req: Request, res: Response, next: N
             })
             .filter(item => item !== null);
 
-        res.json(productsWithViews);
+        res.status(200).json(productsWithViews);
     } catch (error) {
         next(error);
     }
