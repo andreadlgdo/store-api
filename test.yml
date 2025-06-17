@@ -1,0 +1,52 @@
+config:
+  target: "https://andreadtfg.vercel.app"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 100
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: Obtener lista de productos
+    flow:
+      - get:
+          url: "/api/products"
+
+  - name: Obtener un producto individual
+    flow:
+      - get:
+          url: "/api/products/665f2cc3c8d313f764e5d76f" # usa un ID válido de tu base de datos
+
+  - name: Obtener categorías
+    flow:
+      - get:
+          url: "/api/categories"
+
+  - name: Registro de usuario
+    flow:
+      - post:
+          url: "/api/users/register"
+          json:
+            name: "usuario prueba"
+            email: "testuser@example.com"
+            password: "Test123!"
+
+  - name: Login de usuario
+    flow:
+      - post:
+          url: "/api/users/login"
+          json:
+            email: "testuser@example.com"
+            password: "Test123!"
+
+  - name: Crear pedido
+    flow:
+      - post:
+          url: "/api/orders"
+          json:
+            userId: "6649b14d6f0ad95b06c1a5cd"   # asegúrate de que exista
+            products:
+              - productId: "665f2cc3c8d313f764e5d76f"
+                quantity: 1
