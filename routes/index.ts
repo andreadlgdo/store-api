@@ -2,6 +2,7 @@ export { default as addressRoutes }  from "./addressRoutes";
 export { default as authRoutes }  from "./authRoutes";
 export { default as categoryRoutes } from "./categoryRoutes";
 export { default as customRoutes } from "./customRoutes";
+export { default as emailRoutes } from "./emailRoutes";
 export { default as generalRoutes } from "./generalRoutes";
 export { default as imageRoutes } from "./imageRoutes";
 export { default as orderRoutes } from "./orderRoutes";
