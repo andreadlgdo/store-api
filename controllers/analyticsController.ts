@@ -96,3 +96,95 @@ export const getMostPurchasedProducts = async (req: Request, res: Response, next
         next(error);
     }
 };
+
+export const getMostViewedCategories = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Aggregate product views and join with products to get categories
+        const categoryViews = await ProductView.aggregate([
+            {
+                $addFields: {
+                    productIdObjectId: { $toObjectId: '$productId' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'productIdObjectId',
+                    foreignField: '_id',
+                    as: 'product'
+                }
+            },
+            {
+                $unwind: '$product'
+            },
+            {
+                $unwind: '$product.categories'
+            },
+            {
+                $group: {
+                    _id: '$product.categories',
+                    viewCount: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { viewCount: -1 }
+            },
+            {
+                $limit: 5
+            }
+        ]);
+
+        res.status(200).json(categoryViews);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getMostPurchasedCategories = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Aggregate orders with "paid" status and join with products to get categories
+        const categoryPurchases = await Order.aggregate([
+            {
+                $match: { status: 'paid' }
+            },
+            {
+                $unwind: '$products'
+            },
+            {
+                $addFields: {
+                    'products.productIdObjectId': { $toObjectId: '$products.productId' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'products.productIdObjectId',
+                    foreignField: '_id',
+                    as: 'product'
+                }
+            },
+            {
+                $unwind: '$product'
+            },
+            {
+                $unwind: '$product.categories'
+            },
+            {
+                $group: {
+                    _id: '$product.categories',
+                    totalUnits: { $sum: { $toInt: '$products.units' } }
+                }
+            },
+            {
+                $sort: { totalUnits: -1 }
+            },
+            {
+                $limit: 5
+            }
+        ]);
+
+        res.status(200).json(categoryPurchases);
+    } catch (error) {
+        next(error);
+    }
+};
